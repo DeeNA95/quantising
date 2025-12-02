@@ -1,0 +1,22 @@
+[project]
+name = "quantising"
+version = "0.1.0"
+description = "Mixed-Precision Quantization Experiments with Llama-3-8B"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.2.0",
+    "transformers",
+    "accelerate",
+    "lm-eval",
+    "scipy",
+    "wandb",
+    "modal",
+    "llmcompressor",
+    "sentencepiece",
+    "protobuf",
+    "bitsandbytes"
+]
+
+[tool.setuptools]
+packages = ["src"]
