@@ -1,0 +1,80 @@
+project:
+  name: 'mixed-precision-quant-2'
+  entity: 'dadadee02-n-a'
+  output_dir: 'results'
+
+modal:
+  gpu: 'H100'
+  timeout_seconds: 7200
+
+model:
+  name: 'meta-llama/Meta-Llama-3-8B'
+  # name: 'mistralai/Mistral-7B-Instruct-v0.3'
+  dtype: 'bfloat16'
+  trust_remote_code: true
+
+runtime:
+  save_dir: './quantized_models'
+  torch_compile: true
+  tokenizer_padding_side: 'left'
+
+calibration:
+  dataset_name: 'open_platypus'
+  split: 'train'
+  text_field: 'question'
+  response_field: 'response'
+  num_samples: 256
+  batch_size: 8
+  max_seq_length: 2048
+  seed: 42
+
+quantization_defaults:
+  ignore_modules:
+    - 'lm_head'
+    - 'model.norm'
+  targets:
+    - 'mlp'
+    - 'attention'
+  activation_scheme: 'smoothquant'
+  weight_precision: 'int8'
+  activation_precision: 'bfloat16'
+
+evaluation:
+  tasks:
+    - 'hellaswag'
+    - 'mmlu_abstract_algebra'
+    - 'mmlu_anatomy'
+    - 'mmlu_astronomy'
+    - 'mmlu_business_ethics'
+    - 'mmlu_clinical_knowledge'
+  batch_size: 'auto'
+  num_fewshot: 0
+  use_vllm: true
+  gpu_memory_utilization: 0.75
+
+experiments:
+  C-1:
+    description: 'Full BF16 Baseline'
+    strategy: 'identity'
+  C-2:
+    description: 'Uniform SmoothQuant W8A16'
+    strategy: 'uniform'
+  E-A:
+    description: 'MLP-only INT8 (gate/up/down)'
+    strategy: 'selective'
+    targets:
+      - 'mlp'
+  E-B:
+    description: 'Attention-only INT8 (qkv + o)'
+    strategy: 'selective'
+    targets:
+      - 'attention'
+  E-C:
+    description: 'Sandwich INT8 (keep first/last 5 bf16)'
+    strategy: 'sandwich'
+    sandwich:
+      keep_first_layers: 5
+      keep_last_layers: 5
+    targets:
+      - 'mlp'
+      - 'attention'
