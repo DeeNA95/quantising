@@ -1,5 +1,5 @@
 project:
-  name: 'mixed-precision-quant-2'
+  name: 'mixed-precision-quant-3'
   entity: 'dadadee02-n-a'
   output_dir: 'results'
 

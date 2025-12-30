@@ -7,7 +7,7 @@ image = (
         'pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cu128',
         'pip install "sglang[all]"',
         'pip install lm-eval transformers accelerate datasets bitsandbytes',
-        'pip install wandb pyyaml',
+        'pip install "vllm>=0.6.3" wandb pyyaml',
     )
     .add_local_dir("src", remote_path="/root/src")
     .add_local_file("config.yaml", remote_path="/root/config.yaml")
